@@ -15,7 +15,7 @@ class MessageCreate(MessageBase):
     pass
 
 class MessageMetadata(BaseModel):
-    """Metadatos generados durante el procesamiento [cite: 42, 117-120]"""
+    """Metadatos generados durante el procesamiento"""
     word_count: int
     character_count: int
     processed_at: datetime
