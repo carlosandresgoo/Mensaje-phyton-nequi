@@ -1,0 +1,11 @@
+﻿services:
+  api_nequi:
+    build: .
+    container_name: nequi_api_service
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    restart: always

@@ -20,13 +20,15 @@ async def create_message(
     return db_message
 
 @router.get("/messages/{session_id}", response_model=List[MessageResponse])
-async def get_messages(
+async def search_messages(
     session_id: str,
-    sender: str = Query(None),
+    sender: str = Query(None, description="Filtrar por remitente"),
+    query: str = Query(None, description="Palabra clave en el contenido"),
     skip: int = 0,
-    limit: int = 10,
+    limit: int = 20,
     db: Session = Depends(get_db),
     api_key: str = Security(get_api_key)
 ):
-    messages = MessageRepository.get_messages(db, session_id, sender, skip, limit)
+    # Lógica de búsqueda delegada al repositorio
+    messages = MessageRepository.search(db, session_id, sender, query, skip, limit)
     return messages

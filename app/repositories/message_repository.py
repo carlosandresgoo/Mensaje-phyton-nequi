@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from ..models.message import MessageModel
+from typing import List
 
 class MessageRepository:
     @staticmethod
@@ -17,7 +18,6 @@ class MessageRepository:
         db.commit()
         db.refresh(db_message)
         
-        # Retornamos un diccionario con la estructura que espera MessageResponse
         return {
             "status": "success",
             "data": db_message,
@@ -34,7 +34,28 @@ class MessageRepository:
         
         db_messages = query.offset(skip).limit(limit).all()
         
-        # Mapeo manual para asegurar que Pydantic reciba los campos correctos
+        return [
+            {
+                "status": "success",
+                "data": msg,
+                "metadata": msg.metadata_info 
+            } for msg in db_messages
+        ]
+    
+    @staticmethod
+    def search(db: Session, session_id: str, sender: str = None, query: str = None, skip: int = 0, limit: int = 20):
+        """Implementa búsqueda avanzada con filtros dinámicos y búsqueda parcial."""
+        filters = [MessageModel.session_id == session_id]
+        
+        if sender:
+            filters.append(MessageModel.sender == sender)
+        if query:
+            # Implementación de búsqueda parcial (LIKE) para palabras clave
+            filters.append(MessageModel.content.ilike(f"%{query}%"))
+            
+        db_messages = db.query(MessageModel).filter(*filters).offset(skip).limit(limit).all()
+
+        # Mantenemos consistencia en el formato de salida para el Front-end
         return [
             {
                 "status": "success",

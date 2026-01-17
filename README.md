@@ -16,7 +16,7 @@ Este proyecto consiste en una API REST desarrollada con **FastAPI** para la gest
 ### Instalación Local
 1.  **Clonar el repositorio:**
     ```powershell
-    git clone [https://github.com/carlosandresgoo/Mensaje-phyton-nequi.git](https://github.com/carlosandresgoo/Mensaje-phyton-nequi.git)
+    git clone https://github.com/carlosandresgoo/Mensaje-phyton-nequi.git
     cd Mensaje-phyton-nequi
     ```
 
@@ -38,27 +38,88 @@ Este proyecto consiste en una API REST desarrollada con **FastAPI** para la gest
     La API estará disponible en `http://127.0.0.1:8000`.
 
 ---
-
+    
 ## 3. Documentación de la API
-La documentación técnica detallada (OpenAPI/Swagger) se genera automáticamente:
+La documentación técnica detallada (OpenAPI/Swagger) se genera automáticamente y se puede consultar en:
 
 * **Swagger UI:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
-### Autenticación Requerida
-Todas las peticiones deben incluir el siguiente encabezado:
+### Autenticación
+Todas las peticiones a los endpoints protegidos deben incluir un encabezado de autenticación:
 * **Header:** `X-API-Key`
 * **Valor:** `nequi-secret-2026`
 
 ### Endpoints
-* `POST /api/messages/`: Envía un mensaje para ser procesado y guardado.
-* `GET /api/messages/{session_id}`: Consulta el historial de mensajes filtrado por sesión.
+
+#### `POST /api/messages`
+Envía un mensaje para ser procesado y almacenado. El contenido del mensaje es analizado para filtrar palabras prohibidas y calcular metadatos.
+
+*   **Request Body:**
+    ```json
+    {
+        "message_id": "string",
+        "session_id": "string",
+        "content": "string",
+        "timestamp": "2024-01-01T12:00:00Z",
+        "sender": "string"
+    }
+    ```
+
+*   **Success Response (201):**
+    ```json
+    {
+        "status": "success",
+        "data": {
+            "message_id": "string",
+            "session_id": "string",
+            "content": "string",
+            "timestamp": "2024-01-01T12:00:00Z",
+            "sender": "string",
+            "metadata": {
+                "word_count": 0,
+                "char_count": 0,
+                "has_profanity": false
+            }
+        }
+    }
+    ```
+
+#### `GET /api/messages/{session_id}`
+Consulta el historial de mensajes asociados a una `session_id` específica.
+
+*   **Path Parameters:**
+    *   `session_id` (string): Identificador de la sesión a consultar.
+
+*   **Query Parameters (Opcionales):**
+    *   `sender` (string): Filtra los mensajes por el remitente.
+    *   `skip` (int, default: 0): Omite los primeros N resultados (para paginación).
+    *   `limit` (int, default: 10): Limita el número de resultados devueltos.
+
+*   **Success Response (200):**
+    ```json
+    [
+        {
+            "status": "success",
+            "data": {
+                "message_id": "string",
+                "session_id": "string",
+                "content": "string",
+                // ... otros campos del mensaje
+            }
+        }
+    ]
+    ```
 
 ---
 
 ## 4. Instrucciones para Pruebas
-Para garantizar la integridad del código, se utiliza **Pytest** con reportes de cobertura.
+El proyecto utiliza **Pytest** para las pruebas unitarias y de integración. Los reportes de cobertura son generados para asegurar la calidad del código.
 
-### Ejecución de pruebas unitarias:
+### Ejecución de Pruebas
+Para ejecutar el conjunto de pruebas, utilice el siguiente comando desde la raíz del proyecto:
+
 ```powershell
 $env:PYTHONPATH = "."
 python -m pytest
+```
+
