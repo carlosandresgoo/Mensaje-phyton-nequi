@@ -6,12 +6,12 @@ class MessageService:
         self.forbidden_words = ["inapropiado", "malo"]
 
     def process_message(self, message: MessageCreate):
-        # Filtrado simple [cite: 41]
+        # Filtrado simple
         content_filtered = message.content
         for word in self.forbidden_words:
             content_filtered = content_filtered.replace(word, "****")
 
-        # Metadatos [cite: 42, 117-121]
+        # Metadatos
         words = message.content.split()
         metadata = {
             "word_count": len(words),

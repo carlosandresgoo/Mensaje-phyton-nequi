@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Literal, Optional
 
 class MessageBase(BaseModel):
-    # Campos obligatorios según el requerimiento [cite: 32-36]
+    # Campos obligatorios según el requerimiento 
     message_id: str = Field(..., description="Identificador único del mensaje")
     session_id: str = Field(..., description="Identificador de la sesión")
     content: str = Field(..., description="Contenido del mensaje de chat")

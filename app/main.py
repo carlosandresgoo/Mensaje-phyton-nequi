@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from app.api.messages import router as messages_router
 from app.core.database import engine, Base
 
-# Crea las tablas en SQLite al arrancar [cite: 22]
+# Crea las tablas en SQLite al arrancar
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Mensaje-Nequi API")
@@ -11,7 +11,7 @@ app = FastAPI(title="Mensaje-Nequi API")
 # Registrar rutas
 app.include_router(messages_router)
 
-# Manejo de errores global según el formato solicitado [cite: 48, 122-130]
+# Manejo de errores global según el formato solicitado
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     return JSONResponse(

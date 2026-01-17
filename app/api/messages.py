@@ -5,7 +5,7 @@ from ..schemas.message import MessageCreate, MessageResponse
 from ..services.message_service import message_service
 from ..repositories.message_repository import MessageRepository
 from ..core.database import get_db
-from ..core.config import get_api_key  # Asegúrate de tener esto o definirlo aquí
+from ..core.config import get_api_key
 
 router = APIRouter(prefix="/api", tags=["messages"])
 
@@ -15,7 +15,6 @@ async def create_message(
     db: Session = Depends(get_db),
     api_key: str = Security(get_api_key)
 ):
-    # Todo esto DEBE tener 4 espacios de sangría
     processed = message_service.process_message(message)
     db_message = MessageRepository.save(db, processed)
     return db_message
@@ -29,6 +28,5 @@ async def get_messages(
     db: Session = Depends(get_db),
     api_key: str = Security(get_api_key)
 ):
-    # Todo esto DEBE tener 4 espacios de sangría
     messages = MessageRepository.get_messages(db, session_id, sender, skip, limit)
     return messages

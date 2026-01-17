@@ -2,7 +2,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# El archivo se generará en la raíz del proyecto
 SQLALCHEMY_DATABASE_URL = "sqlite:///./mensaje_nequi.db"
 
 engine = create_engine(
