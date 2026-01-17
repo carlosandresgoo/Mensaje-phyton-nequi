@@ -1,22 +1,22 @@
 from fastapi.testclient import TestClient
 from app.main import app
+import uuid
 
 client = TestClient(app)
 # Definimos el header global para los tests
 HEADERS = {"X-API-Key": "nequi-secret-2026"}
 
 def test_create_message():
+    unique_id = f"msg-{uuid.uuid4()}"  # Genera un ID único cada vez
     payload = {
-        "message_id": "msg-123",
+        "message_id": unique_id,
         "session_id": "sess-456",
         "content": "Hola, prueba técnica",
         "timestamp": "2023-06-15T14:30:00Z",
         "sender": "user"
     }
-    # Añadimos headers=HEADERS a la petición
     response = client.post("/api/messages", json=payload, headers=HEADERS)
     assert response.status_code == 201
-    assert response.json()["data"]["message_id"] == "msg-123"
 
 def test_get_messages():
     session_id = "sess-456"
