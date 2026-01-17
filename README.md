@@ -1,7 +1,7 @@
 # API de Mensajería - Prueba Técnica Nequi
 
 ## 1. Descripción General del Proyecto
-Este proyecto consiste en una API REST desarrollada con **FastAPI** para la gestión y procesamiento de mensajes. La solución implementa una arquitectura limpia (Clean Architecture) dividida en capas de API, Servicios y Repositorios.
+Este proyecto consiste en una API REST desarrollada con **FastAPI** para la gestión y procesamiento de mensajes. La solución implementa una arquitectura limpia dividida en capas de API, Servicios y Repositorios, garantizando escalabilidad y mantenibilidad.
 
 **Funcionalidades principales:**
 * **Persistencia:** Almacenamiento de mensajes en base de datos SQLite mediante SQLAlchemy.
@@ -11,13 +11,34 @@ Este proyecto consiste en una API REST desarrollada con **FastAPI** para la gest
 
 ---
 
-## 2. Instrucciones de Configuración
+## 2. Puntos Extra Implementados
+
+###  Soporte Docker
+Se incluye configuración para despliegue contenerizado, facilitando la portabilidad del microservicio.
+* **Comando:** `docker compose up --build -d`
+
+### Rate Limiting (Limitación de Tasa)
+Mecanismo de seguridad para prevenir abusos de tráfico.
+* **Límite:** 10 peticiones por minuto por IP.
+* **Error:** `429 Too Many Requests`.
+
+### Búsqueda Avanzada
+Endpoint especializado para filtrar mensajes de forma eficiente.
+* **Ruta:** `GET /api/messages/search`
+* **Filtros:** Contenido (query string) y remitente (user_id).
+
+### Infraestructura como Código (IaC)
+Propuesta de despliegue automatizado en **Azure** utilizando **Terraform** (ubicado en carpeta `/terraform`).
+* **Recursos:** Azure Container Registry (ACR) y App Service.
+
+---
+
+## 3. Instrucciones de Configuración
 
 ### Instalación Local
 1.  **Clonar el repositorio:**
     ```powershell
-    git clone https://github.com/carlosandresgoo/Mensaje-phyton-nequi.git
-    cd Mensaje-phyton-nequi
+     git clone https://github.com/carlosandresgoo/Mensaje-phyton-nequi.git
     ```
 
 2.  **Configurar entorno virtual:**
@@ -38,88 +59,36 @@ Este proyecto consiste en una API REST desarrollada con **FastAPI** para la gest
     La API estará disponible en `http://127.0.0.1:8000`.
 
 ---
-    
-## 3. Documentación de la API
-La documentación técnica detallada (OpenAPI/Swagger) se genera automáticamente y se puede consultar en:
+
+## 4. Documentación de la API
+La documentación técnica detallada (OpenAPI/Swagger) se genera automáticamente:
 
 * **Swagger UI:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ### Autenticación
-Todas las peticiones a los endpoints protegidos deben incluir un encabezado de autenticación:
+Todas las peticiones a los endpoints protegidos deben incluir:
 * **Header:** `X-API-Key`
 * **Valor:** `nequi-secret-2026`
 
-### Endpoints
+### Endpoints Principales
 
 #### `POST /api/messages`
-Envía un mensaje para ser procesado y almacenado. El contenido del mensaje es analizado para filtrar palabras prohibidas y calcular metadatos.
-
-*   **Request Body:**
-    ```json
-    {
-        "message_id": "string",
-        "session_id": "string",
-        "content": "string",
-        "timestamp": "2024-01-01T12:00:00Z",
-        "sender": "string"
-    }
-    ```
-
-*   **Success Response (201):**
-    ```json
-    {
-        "status": "success",
-        "data": {
-            "message_id": "string",
-            "session_id": "string",
-            "content": "string",
-            "timestamp": "2024-01-01T12:00:00Z",
-            "sender": "string",
-            "metadata": {
-                "word_count": 0,
-                "char_count": 0,
-                "has_profanity": false
-            }
-        }
-    }
-    ```
+Envía un mensaje para ser procesado y almacenado.
 
 #### `GET /api/messages/{session_id}`
-Consulta el historial de mensajes asociados a una `session_id` específica.
+Consulta el historial de mensajes asociados a una sesión específica.
 
-*   **Path Parameters:**
-    *   `session_id` (string): Identificador de la sesión a consultar.
-
-*   **Query Parameters (Opcionales):**
-    *   `sender` (string): Filtra los mensajes por el remitente.
-    *   `skip` (int, default: 0): Omite los primeros N resultados (para paginación).
-    *   `limit` (int, default: 10): Limita el número de resultados devueltos.
-
-*   **Success Response (200):**
-    ```json
-    [
-        {
-            "status": "success",
-            "data": {
-                "message_id": "string",
-                "session_id": "string",
-                "content": "string",
-                // ... otros campos del mensaje
-            }
-        }
-    ]
-    ```
+#### `GET /api/messages/search`
+Busca mensajes por contenido o remitente.
 
 ---
 
-## 4. Instrucciones para Pruebas
-El proyecto utiliza **Pytest** para las pruebas unitarias y de integración. Los reportes de cobertura son generados para asegurar la calidad del código.
+## 5. Instrucciones para Pruebas
+El proyecto utiliza **Pytest** para asegurar la calidad del código.
+
+
 
 ### Ejecución de Pruebas
-Para ejecutar el conjunto de pruebas, utilice el siguiente comando desde la raíz del proyecto:
-
 ```powershell
 $env:PYTHONPATH = "."
 python -m pytest
-```
-
