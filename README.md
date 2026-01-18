@@ -70,6 +70,7 @@ Todas las peticiones a los endpoints protegidos deben incluir:
 * **Header:** `X-API-Key`
 * **Valor:** `nequi-secret-2026`
 
+
 ### Endpoints Principales
 
 #### `POST /api/messages`
@@ -80,6 +81,33 @@ Consulta el historial de mensajes asociados a una sesión específica.
 
 #### `GET /api/messages/search`
 Busca mensajes por contenido o remitente.
+
+#### `WebSocket /ws/messages`
+Permite recibir actualizaciones de mensajes en tiempo real mediante WebSocket.
+
+**Conexión:**
+```
+ws://127.0.0.1:8000/ws/messages
+```
+
+**Funcionamiento:**
+- Cada vez que un cliente envía un mensaje JSON por el WebSocket, este se retransmite (broadcast) a todos los clientes conectados.
+- El mensaje debe tener formato JSON.
+
+**Ejemplo de conexión en JavaScript:**
+```js
+const ws = new WebSocket('ws://127.0.0.1:8000/ws/messages');
+ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.event === 'new_message') {
+        console.log('Nuevo mensaje:', data.data);
+    }
+};
+ws.onopen = () => {
+    ws.send(JSON.stringify({ message: '¡Hola en tiempo real!' }));
+};
+```
+
 
 ---
 

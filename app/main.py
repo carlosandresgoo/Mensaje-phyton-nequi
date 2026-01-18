@@ -3,6 +3,8 @@ from fastapi.responses import JSONResponse
 from app.api.messages import router as messages_router
 from app.core.database import engine, Base
 from app.middleware.rate_limiter import RateLimitMiddleware
+from fastapi import WebSocket, WebSocketDisconnect
+from app.core.websocket_manager import manager
 
 # Crea las tablas en SQLite al arrancar
 Base.metadata.create_all(bind=engine)
@@ -28,6 +30,18 @@ async def global_exception_handler(request: Request, exc: Exception):
             }
         }
     )
+@app.websocket("/ws/messages")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_json()
+            # Broadcast a todos los clientes conectados
+            await manager.broadcast({"event": "new_message", "data": data})
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+    except Exception:
+        manager.disconnect(websocket)
 
 @app.get("/")
 def root():
