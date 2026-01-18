@@ -6,19 +6,25 @@ from app.middleware.rate_limiter import RateLimitMiddleware
 from fastapi import WebSocket, WebSocketDisconnect
 from app.core.websocket_manager import manager
 
-# Crea las tablas en SQLite al arrancar
+
+# Crear las tablas en la base de datos SQLite al iniciar la aplicación
 Base.metadata.create_all(bind=engine)
 
+# Instancia principal de la aplicación FastAPI
 app = FastAPI(title="Mensaje-Nequi API")
-# Registrar el middleware justo después de instanciar FastAPI
+
+# Registrar el middleware de limitación de tasa (rate limiting)
 app.add_middleware(RateLimitMiddleware)
 
-# Registrar rutas
+# Registrar las rutas de la API REST
 app.include_router(messages_router)
 
-# Manejo de errores global según el formato solicitado
+# Manejo global de errores para devolver respuestas uniformes
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    """
+    Captura excepciones no manejadas y retorna un error con formato estándar.
+    """
     return JSONResponse(
         status_code=400,
         content={
@@ -30,19 +36,29 @@ async def global_exception_handler(request: Request, exc: Exception):
             }
         }
     )
+
+# Endpoint WebSocket para actualizaciones de mensajes en tiempo real
 @app.websocket("/ws/messages")
 async def websocket_endpoint(websocket: WebSocket):
+    """
+    Permite a los clientes conectarse vía WebSocket y recibir mensajes en tiempo real.
+    Cada mensaje recibido se retransmite a todos los clientes conectados (broadcast).
+    """
     await manager.connect(websocket)
     try:
         while True:
             data = await websocket.receive_json()
-            # Broadcast a todos los clientes conectados
+            # Enviar el mensaje a todos los clientes conectados
             await manager.broadcast({"event": "new_message", "data": data})
     except WebSocketDisconnect:
         manager.disconnect(websocket)
     except Exception:
         manager.disconnect(websocket)
 
+# Endpoint raíz para verificación de estado
 @app.get("/")
 def root():
+    """
+    Retorna un mensaje de estado para verificar que la API está operativa.
+    """
     return {"status": "success", "message": "API de Nequi operativa"}

@@ -7,21 +7,30 @@ from ..repositories.message_repository import MessageRepository
 from ..core.database import get_db
 from ..core.config import get_api_key
 
+
+# Enrutador para los endpoints de mensajes
 router = APIRouter(prefix="/api", tags=["messages"])
+
 
 @router.post("/messages", response_model=MessageResponse, status_code=201)
 async def create_message(
-    message: MessageCreate, 
+    message: MessageCreate,
     db: Session = Depends(get_db),
     api_key: str = Security(get_api_key)
 ):
+    """
+    Procesa y almacena un nuevo mensaje recibido vía POST.
+    Requiere autenticación por API Key.
+    """
     processed = message_service.process_message(message)
     db_message = MessageRepository.save(db, processed)
     return db_message
 
-@router.get("/messages/{session_id}", response_model=List[MessageResponse])
+
+
+@router.get("/messages", response_model=List[MessageResponse])
 async def search_messages(
-    session_id: str,
+    session_id: str = Query(None, description="Filtrar por sesión (opcional)"),
     sender: str = Query(None, description="Filtrar por remitente"),
     query: str = Query(None, description="Palabra clave en el contenido"),
     skip: int = 0,
@@ -29,6 +38,9 @@ async def search_messages(
     db: Session = Depends(get_db),
     api_key: str = Security(get_api_key)
 ):
-    # Lógica de búsqueda delegada al repositorio
+    """
+    Busca mensajes con filtros opcionales por sesión, remitente y contenido.
+    Requiere autenticación por API Key.
+    """
     messages = MessageRepository.search(db, session_id, sender, query, skip, limit)
     return messages
