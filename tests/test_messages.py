@@ -26,7 +26,7 @@ def test_get_messages():
     assert isinstance(response.json(), list)
 
 def test_unauthorized_access():
-    """Prueba que sin la API Key el sistema rechaza la conexión"""
+    # Prueba que sin la API Key el sistema rechaza la conexión
     response = client.get("/api/messages/sess-456") # Sin headers
     assert response.status_code == 401
     assert response.json()["detail"] == "Credenciales de API inválidas"

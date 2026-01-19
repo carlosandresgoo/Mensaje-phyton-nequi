@@ -21,10 +21,8 @@ app.include_router(messages_router)
 
 # Manejo global de errores para devolver respuestas uniformes
 @app.exception_handler(Exception)
+# Captura excepciones no manejadas y retorna un error con formato estándar.
 async def global_exception_handler(request: Request, exc: Exception):
-    """
-    Captura excepciones no manejadas y retorna un error con formato estándar.
-    """
     return JSONResponse(
         status_code=400,
         content={
@@ -39,11 +37,8 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 # Endpoint WebSocket para actualizaciones de mensajes en tiempo real
 @app.websocket("/ws/messages")
+# Permite a los clientes conectarse vía WebSocket y recibir mensajes en tiempo real. Cada mensaje recibido se retransmite a todos los clientes conectados (broadcast).
 async def websocket_endpoint(websocket: WebSocket):
-    """
-    Permite a los clientes conectarse vía WebSocket y recibir mensajes en tiempo real.
-    Cada mensaje recibido se retransmite a todos los clientes conectados (broadcast).
-    """
     await manager.connect(websocket)
     try:
         while True:
@@ -57,8 +52,6 @@ async def websocket_endpoint(websocket: WebSocket):
 
 # Endpoint raíz para verificación de estado
 @app.get("/")
+# Retorna un mensaje de estado para verificar que la API está operativa.
 def root():
-    """
-    Retorna un mensaje de estado para verificar que la API está operativa.
-    """
     return {"status": "success", "message": "API de Nequi operativa"}

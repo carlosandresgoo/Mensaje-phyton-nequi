@@ -4,14 +4,10 @@ from typing import List
 
 
 class MessageRepository:
-    """
-    Repositorio para operaciones de persistencia y consulta de mensajes en la base de datos.
-    """
+    # Repositorio para operaciones de persistencia y consulta de mensajes en la base de datos.
     @staticmethod
     def save(db: Session, message_data: dict):
-        """
-        Persiste el mensaje y sus metadatos en SQLite.
-        """
+        # Persiste el mensaje y sus metadatos en SQLite.
         db_message = MessageModel(
             message_id=message_data["data"].message_id,
             session_id=message_data["data"].session_id,
@@ -32,10 +28,7 @@ class MessageRepository:
 
     @staticmethod
     def get_messages(db: Session, session_id: str, sender: str = None, skip: int = 0, limit: int = 10):
-        """
-        Recupera mensajes filtrados por sesión y opcionalmente por remitente.
-        Permite paginación con skip y limit.
-        """
+        # Recupera mensajes filtrados por sesión y opcionalmente por remitente. Permite paginación con skip y limit.
         query = db.query(MessageModel).filter(MessageModel.session_id == session_id)
 
         if sender:

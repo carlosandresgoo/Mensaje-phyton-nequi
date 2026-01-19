@@ -13,15 +13,12 @@ router = APIRouter(prefix="/api", tags=["messages"])
 
 
 @router.post("/messages", response_model=MessageResponse, status_code=201)
+# Procesa y almacena un nuevo mensaje recibido vía POST. Requiere autenticación por API Key.
 async def create_message(
     message: MessageCreate,
     db: Session = Depends(get_db),
     api_key: str = Security(get_api_key)
 ):
-    """
-    Procesa y almacena un nuevo mensaje recibido vía POST.
-    Requiere autenticación por API Key.
-    """
     processed = message_service.process_message(message)
     db_message = MessageRepository.save(db, processed)
     return db_message
@@ -29,6 +26,7 @@ async def create_message(
 
 
 @router.get("/messages", response_model=List[MessageResponse])
+# Busca mensajes con filtros opcionales por sesión, remitente y contenido. Requiere autenticación por API Key.
 async def search_messages(
     session_id: str = Query(None, description="Filtrar por sesión (opcional)"),
     sender: str = Query(None, description="Filtrar por remitente"),
@@ -38,9 +36,5 @@ async def search_messages(
     db: Session = Depends(get_db),
     api_key: str = Security(get_api_key)
 ):
-    """
-    Busca mensajes con filtros opcionales por sesión, remitente y contenido.
-    Requiere autenticación por API Key.
-    """
     messages = MessageRepository.search(db, session_id, sender, query, skip, limit)
     return messages

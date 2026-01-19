@@ -3,9 +3,7 @@ from ..core.database import Base
 
 
 class MessageModel(Base):
-    """
-    Modelo ORM para la tabla de mensajes en la base de datos.
-    """
+    # Modelo ORM para la tabla de mensajes en la base de datos.
     __tablename__ = "messages"
 
     message_id = Column(String, primary_key=True, index=True)  # ID único del mensaje

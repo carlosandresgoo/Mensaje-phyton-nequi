@@ -5,10 +5,7 @@ from collections import defaultdict
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
-    """
-    Middleware para limitar la cantidad de peticiones por IP en un periodo de tiempo.
-    Previene abusos y ataques de denegación de servicio (DoS).
-    """
+    # Middleware para limitar la cantidad de peticiones por IP en un periodo de tiempo. Previene abusos y ataques de denegación de servicio (DoS).
     RATE_LIMIT_DURATION = 60  # Ventana de tiempo en segundos
     MAX_REQUESTS = 10         # Máximo de peticiones permitidas por IP
 
@@ -18,10 +15,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.request_counts = defaultdict(list)
 
     async def dispatch(self, request: Request, call_next):
-        """
-        Verifica si la IP ha excedido el límite de peticiones en la ventana de tiempo.
-        Si se excede, retorna un error 429. Si no, permite continuar la petición.
-        """
+        # Verifica si la IP ha excedido el límite de peticiones en la ventana de tiempo. Si se excede, retorna un error 429. Si no, permite continuar la petición.
         client_ip = request.client.host
         current_time = time.time()
 

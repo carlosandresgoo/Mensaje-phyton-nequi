@@ -11,24 +11,17 @@ class ConnectionManager:
         self.active_connections: List[WebSocket] = []
 
     async def connect(self, websocket: WebSocket):
-        """
-        Acepta una nueva conexión WebSocket y la agrega a la lista de conexiones activas.
-        """
+        # Acepta una nueva conexión WebSocket y la agrega a la lista de conexiones activas.
         await websocket.accept()
         self.active_connections.append(websocket)
 
     def disconnect(self, websocket: WebSocket):
-        """
-        Elimina una conexión WebSocket de la lista de conexiones activas.
-        """
+        # Elimina una conexión WebSocket de la lista de conexiones activas.
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
 
     async def broadcast(self, message: dict):
-        """
-        Envía un mensaje a todos los clientes WebSocket conectados.
-        Si una conexión falla, se elimina de la lista.
-        """
+        # Envía un mensaje a todos los clientes WebSocket conectados. Si una conexión falla, se elimina de la lista.
         for connection in self.active_connections[:]:  # Copia para evitar errores al eliminar
             try:
                 await connection.send_json(message)

@@ -3,17 +3,13 @@ from app.schemas.message import MessageCreate
 
 
 class MessageService:
-    """
-    Servicio encargado de procesar mensajes: filtra palabras prohibidas y genera metadatos.
-    """
+    # Servicio encargado de procesar mensajes: filtra palabras prohibidas y genera metadatos.
     def __init__(self):
         # Lista de palabras prohibidas a filtrar
         self.forbidden_words = ["inapropiado", "malo"]
 
     def process_message(self, message: MessageCreate):
-        """
-        Filtra palabras prohibidas en el contenido y genera metadatos del mensaje.
-        """
+        # Filtra palabras prohibidas en el contenido y genera metadatos del mensaje.
         # Filtrado simple de palabras prohibidas
         content_filtered = message.content
         for word in self.forbidden_words:

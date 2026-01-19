@@ -17,11 +17,9 @@ Base = declarative_base()
 # Crear la fábrica de sesiones para interactuar con la base de datos
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# Dependencia para obtener una sesión de base de datos en los endpoints. Cierra la sesión automáticamente al finalizar.
 def get_db():
-    """
-    Dependencia para obtener una sesión de base de datos en los endpoints.
-    Cierra la sesión automáticamente al finalizar.
-    """
+    
     db = SessionLocal()
     try:
         yield db
